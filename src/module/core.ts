@@ -1,31 +1,63 @@
-import Post from "../interface/post";
-import User from "../interface/user";
-import Chat from "../interface/chat";
-import Message from "../interface/message";
-
+import Post from '../interface/post';
+import User from '../interface/user';
+import generateRandomString from '../utils/generateRandomString';
 export default class Core {
-    constructor() {}
-
-    log = () => {console.log('✅ CORE online ');return true;};
+    userDB: User[] = [];
+    postDB: Post[] = [];
     
-    submitPost = (post: Post ) => true;
-    removePost = (postID: string ) => true;
-    likePost = (postID: string  ) => true;
-    getPost = (postID: string ) => true;
+    constructor() {}
+    
+    submitPost = (newPost: Post) => {
+        this.postDB.push(newPost);
+        return newPost;
+    };
+    
+    deletePost = (postID: string) => {
+        const index = this.postDB.findIndex(obj => obj.id === postID);
+        if (index !== -1) {
+            this.postDB.splice(index, 1);
+            return true;
+        }
+        return false;
+    };
 
-    createUser = (user: User) => true;
-    deleteUser = (userID: string) => true;
+    getFeed = () => {
+        const filtered = this.postDB.filter(obj => obj.public === 'all');
+        if (filtered.length > 0) {
+            return filtered;
+        }
+        return undefined;
+    }
 
-    followUser = (userID: string) => true;
-    leaveUser = (userID: string) => true;
-    getFeed = () => true;
-    getFeedByUser = (userID: string) => true;
-    getFeedByMultiUsers = (userIdList: string[]) => true;
+    getPost = (from: string, to: string):Post[] | undefined => {
+        const filtered = this.postDB.filter(obj => obj.public === to && obj.authorID === from);
+        if (filtered.length > 0) {
+            return filtered;
+        }
+        return undefined;
+    } 
 
-    createChat = (userIdList: string[]) => true;
-    getChat = (chatID: string) => true;
-    deleteChat = (chatID: string) => true;
+    register = (username: string, password: string):boolean => {
+        const index = this.userDB.findIndex(obj => obj.username === username);
+        if (index === -1) {
+            this.userDB.push({
+                id: generateRandomString(5),
+                username: username,
+                password: password,
+                postList: []
+            })
+            return true;
+        }
+        return false;
+    }
 
-    sendMessage = (chatID: string, message: Message) => true;
+    login = (username: string, password: string):boolean => {
+        const filtered = this.userDB.filter(obj => obj.username === username && obj.password === password);
+        if (filtered.length === 1) {
+            return true;
+        }
+        return false;
+    }
+
 
 }
