@@ -40,12 +40,7 @@ export default class Core {
     register = (username: string, password: string):boolean => {
         const index = this.userDB.findIndex(obj => obj.username === username);
         if (index === -1) {
-            this.userDB.push({
-                id: generateRandomString(5),
-                username: username,
-                password: password,
-                postList: []
-            })
+            this.userDB.push({username: username,password: password})
             return true;
         }
         return false;
